@@ -19,8 +19,11 @@ from unet import UNet
 from utils.data_loading import BasicDataset, CarvanaDataset
 from utils.dice_score import dice_loss
 
-dir_img = Path('./data/imgs/')
-dir_mask = Path('./data/masks/')
+# dir_img = Path('./data/imgs/')
+# dir_mask = Path('./data/masks/')
+dir_img = Path('/HDD/seg+skelet/dataset/imgs/')
+dir_mask = Path('/HDD/seg+skelet/dataset/masks/')
+
 dir_checkpoint = Path('./checkpoints/')
 
 
@@ -178,7 +181,7 @@ def get_args():
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('--amp', action='store_true', default=False, help='Use mixed precision')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
-    parser.add_argument('--classes', '-c', type=int, default=2, help='Number of classes')
+    parser.add_argument('--classes', '-c', type=int, default=3, help='Number of classes')
 
     return parser.parse_args()
 
@@ -187,7 +190,7 @@ if __name__ == '__main__':
     args = get_args()
 
     logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
 
     # Change here to adapt to your data
@@ -207,6 +210,7 @@ if __name__ == '__main__':
         model.load_state_dict(state_dict)
         logging.info(f'Model loaded from {args.load}')
 
+    print(device)
     model.to(device=device)
     try:
         train_model(
